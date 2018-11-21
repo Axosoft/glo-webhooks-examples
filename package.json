@@ -1,0 +1,12 @@
+{
+  "name": "glo-webhooks-examples",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "git@github.com:Axosoft/glo-webhooks-examples.git",
+  "author": "Axosoft, LLC",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
