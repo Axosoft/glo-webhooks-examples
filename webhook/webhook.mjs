@@ -3,7 +3,7 @@ import { DiscordService } from './discord.mjs';
 
 const getUserById = async (boardId, userId) =>
 	await BoardService.getById(boardId).then(({ members }) =>
-		members.filter((a) => a.id === userId).map((a) => a.name)
+		members.filter((a) => a.id === userId).map((a) => a.name || a.username)
 	);
 const getColumnById = async (boardId, columnId) =>
 	await BoardService.getById(boardId).then(({ columns }) =>
@@ -97,24 +97,20 @@ export const postWebHook = async (req, res) => {
 		'assignees_updated',
 	];
 
-	console.log('assigneesActionsToMap', assigneesActionsToMap.includes(action));
 	if (assigneesActionsToMap.includes(action)) {
 		req.body.card.assignees = await Promise.all(
 			req.body.card.assignees.map(async (assignee) => await getUserById(req.body.board.id, assignee.id))
 		);
 	}
 
-	console.log('createdByActionsToMap', createdByActionsToMap.includes(action));
 	if (createdByActionsToMap.includes(action)) {
 		req.body.card.created_by = await getUserById(req.body.board.id, req.body.card.created_by.id);
 	}
 
-	console.log('columnIdActionsToMap', columnIdActionsToMap.includes(action));
 	if (columnIdActionsToMap.includes(action)) {
 		req.body.card.column = await getColumnById(req.body.board.id, req.body.card.column_id);
 	}
 
-	console.log('actionToSend', actionToSend.includes(action));
 	if (actionToSend.includes(action)) {
 		templateToMessageValue(req.body).then((data) => console.log(data));
 	}
@@ -140,8 +136,6 @@ const templateToMessageValue = (body) => {
 		totalTask: body.card.total_task_count,
 		labels: body.labels || body.card.labels,
 	};
-
-	console.log('templateValues', templateValues);
 
 	return DiscordService.sendMessage(templateValues);
 };
